@@ -36,16 +36,26 @@ public class GameMain extends JPanel {
                 int mouseX = e.getX();
                 int mouseY = e.getY();
                 // Get the row and column clicked
-                int row = mouseY / Cell.SIZE;
+//                int row = mouseY / Cell.SIZE;
                 int col = mouseX / Cell.SIZE;
 
                 if (currentState == State.PLAYING) {
-                    if (row >= 0 && row < Board.ROWS && col >= 0 && col < Board.COLS
-                            && board.cells[row][col].content == Seed.NO_SEED) {
-                        // Update cells[][] and return the new game state after the move
-                        currentState = board.stepGame(currentPlayer, row, col);
-                        // Switch player
-                        currentPlayer = (currentPlayer == Seed.CROSS) ? Seed.NOUGHT : Seed.CROSS;
+                    if (col >= 0 && col < Board.COLS) {
+                        for (int row = Board.ROWS - 1; row >= 0; row--) {
+                            if (board.cells[row][col].content == Seed.NO_SEED) {
+                                // Update cells[][] and return the new game state after the move
+                                currentState = board.stepGame(currentPlayer, row, col);
+                                // Switch player
+                                // Play appropriate sound clip
+                                if (currentState == State.PLAYING) {
+                                    SoundEffect.EAT_FOOD.play();
+                                } else {
+                                    SoundEffect.DIE.play();
+                                }
+                                currentPlayer = (currentPlayer == Seed.CROSS) ? Seed.NOUGHT : Seed.CROSS;
+                                break;
+                            }
+                        }
                     }
                 } else {        // game over
                     newGame();  // restart the game
