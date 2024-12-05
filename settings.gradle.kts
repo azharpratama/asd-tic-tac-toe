@@ -1,2 +1,2 @@
-rootProject.name = "asd-tic-tac-toe"
+rootProject.name = "asd-final-project"
 
