@@ -20,6 +20,6 @@ tasks.test {
 
 tasks.withType<Jar> {
     manifest {
-        attributes["Main-Class"] = "org.example.GameMain"
+        attributes["Main-Class"] = "org.example.SudokuMain"
     }
 }

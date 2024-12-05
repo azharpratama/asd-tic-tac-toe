@@ -1,53 +1,70 @@
 package org.example;
 
-import java.awt.*;
+import java.awt.Color;
+import java.awt.Font;
+import java.io.Serial;
+import javax.swing.JTextField;
 /**
- * The Cell class models each individual cell of the game board.
+ * The Cell class model the cells of the Sudoku puzzle, by customizing (subclass)
+ * the javax.swing.JTextField to include row/column, puzzle number and status.
  */
-public class Cell {
-    // Define named constants for drawing
-    public static final int SIZE = 120; // cell width/height (square)
-    // Symbols (cross/nought) are displayed inside a cell, with padding from border
-    public static final int PADDING = SIZE / 5;
-    public static final int SEED_SIZE = SIZE - PADDING * 2;
-    public static final int SEED_STROKE_WIDTH = 8; // pen's stroke width
+public class Cell extends JTextField {
+    @Serial
+    private static final long serialVersionUID = 1L;  // to prevent serial warning
+
+    // Define named constants for JTextField's colors and fonts
+    //  to be chosen based on CellStatus
+    public static final Color BG_GIVEN = new Color(240, 240, 240); // RGB
+    public static final Color FG_GIVEN = Color.BLACK;
+    public static final Color FG_NOT_GIVEN = Color.GRAY;
+    public static final Color BG_TO_GUESS  = Color.YELLOW;
+    public static final Color BG_CORRECT_GUESS = new Color(0, 216, 0);
+    public static final Color BG_WRONG_GUESS   = new Color(216, 0, 0);
+    public static final Font FONT_NUMBERS = new Font("OCR A Extended", Font.PLAIN, 28);
 
     // Define properties (package-visible)
-    /** Content of this cell (Seed.EMPTY, Seed.CROSS, or Seed.NOUGHT) */
-    Seed content;
-    /** Row and column of this cell */
+    /** The row and column number [0-8] of this cell */
     int row, col;
+    /** The puzzle number [1-9] for this cell */
+    int number;
+    /** The status of this cell defined in enum CellStatus */
+    CellStatus status;
 
-    /** Constructor to initialize this cell with the specified row and col */
+    /** Constructor */
     public Cell(int row, int col) {
+        super();   // JTextField
         this.row = row;
         this.col = col;
-        content = Seed.NO_SEED;
+        // Inherited from JTextField: Beautify all the cells once for all
+        super.setHorizontalAlignment(JTextField.CENTER);
+        super.setFont(FONT_NUMBERS);
     }
 
-    /** Reset this cell's content to EMPTY, ready for new game */
-    public void newGame() {
-        content = Seed.NO_SEED;
+    /** Reset this cell for a new game, given the puzzle number and isGiven */
+    public void newGame(int number, boolean isGiven) {
+        this.number = number;
+        status = isGiven ? CellStatus.GIVEN : CellStatus.TO_GUESS;
+        paint();    // paint itself
     }
 
-    /** Paint itself on the graphics canvas, given the Graphics context */
-    public void paint(Graphics g) {
-        // Use Graphics2D which allows us to set the pen's stroke
-        Graphics2D g2d = (Graphics2D)g;
-        g2d.setStroke(new BasicStroke(SEED_STROKE_WIDTH,
-                BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND));
-        // Draw the Seed if it is not empty
-        int x1 = col * SIZE + PADDING;
-        int y1 = row * SIZE + PADDING;
-        if (content == Seed.CROSS) {
-            g2d.setColor(GameMain.COLOR_CROSS);  // draw a 2-line cross
-            int x2 = (col + 1) * SIZE - PADDING;
-            int y2 = (row + 1) * SIZE - PADDING;
-            g2d.drawLine(x1, y1, x2, y2);
-            g2d.drawLine(x2, y1, x1, y2);
-        } else if (content == Seed.NOUGHT) {  // draw a circle
-            g2d.setColor(GameMain.COLOR_NOUGHT);
-            g2d.drawOval(x1, y1, SEED_SIZE, SEED_SIZE);
+    /** This Cell (JTextField) paints itself based on its status */
+    public void paint() {
+        if (status == CellStatus.GIVEN) {
+            // Inherited from JTextField: Set display properties
+            super.setText(number + "");
+            super.setEditable(false);
+            super.setBackground(BG_GIVEN);
+            super.setForeground(FG_GIVEN);
+        } else if (status == CellStatus.TO_GUESS) {
+            // Inherited from JTextField: Set display properties
+            super.setText("");
+            super.setEditable(true);
+            super.setBackground(BG_TO_GUESS);
+            super.setForeground(FG_NOT_GIVEN);
+        } else if (status == CellStatus.CORRECT_GUESS) {  // from TO_GUESS
+            super.setBackground(BG_CORRECT_GUESS);
+        } else if (status == CellStatus.WRONG_GUESS) {    // from TO_GUESS
+            super.setBackground(BG_WRONG_GUESS);
         }
     }
 }
