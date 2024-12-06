@@ -13,19 +13,25 @@ package org.example;
 import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
-
+/**
+ * The main Sudoku program
+ */
 public class SudokuMain extends JFrame {
     // private variables
-    private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;  // to prevent serial warning
     private AudioManager audioManager;
     GameBoardPanel board = new GameBoardPanel(this);
     JButton btnNewGame = new JButton("New Game");
     JTextField statusBar = new JTextField("Welcome to Sudoku!");
 
+    // Constructor
     public SudokuMain() {
         Container cp = getContentPane();
         cp.setLayout(new BorderLayout());
+
         cp.add(board, BorderLayout.CENTER);
+        // Add a button to the south to re-start the game via board.newGame()
+        // ......
         cp.add(btnNewGame, BorderLayout.SOUTH);
         cp.add(statusBar, BorderLayout.NORTH);
 
@@ -36,6 +42,7 @@ public class SudokuMain extends JFrame {
             }
         });
 
+        // Initialize the game board to start the game
         board.newGame();
 
         // Create the menu bar
@@ -106,7 +113,11 @@ public class SudokuMain extends JFrame {
         });
     }
 
+    /** The entry main() entry method */
     public static void main(String[] args) {
+        // [TODO 1] Check "Swing program template" on how to run
+        //  the constructor of "SudokuMain"
+        // .........
         SwingUtilities.invokeLater(new Runnable() {
             @Override
             public void run() {
