@@ -20,8 +20,9 @@ public class SudokuMain extends JFrame {
     private static final long serialVersionUID = 1L;  // to prevent serial warning
 
     // private variables
-    GameBoardPanel board = new GameBoardPanel();
+    GameBoardPanel board = new GameBoardPanel(this);
     JButton btnNewGame = new JButton("New Game");
+    JTextField statusBar = new JTextField("Welcome to Sudoku!");
 
     // Constructor
     public SudokuMain() {
@@ -94,6 +95,10 @@ public class SudokuMain extends JFrame {
         // Set the menu bar
         setJMenuBar(menuBar);
 
+        // Add the status bar
+        statusBar.setEditable(false);
+        cp.add(statusBar, BorderLayout.SOUTH);
+
         pack();     // Pack the UI components, instead of using setSize()
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);  // to handle window-closing
         setTitle("Sudoku");
@@ -111,5 +116,10 @@ public class SudokuMain extends JFrame {
                 new SudokuMain();
             }
         });
+    }
+    /** Update the status bar with the number of cells remaining */
+    public void updateStatusBar() {
+        int cellsRemaining = board.getCellsRemaining();
+        statusBar.setText("Cells remaining: " + cellsRemaining);
     }
 }

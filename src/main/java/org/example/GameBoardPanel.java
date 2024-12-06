@@ -30,9 +30,11 @@ public class GameBoardPanel extends JPanel {
     private final Cell[][] cells = new Cell[SudokuConstants.GRID_SIZE][SudokuConstants.GRID_SIZE];
     /** It also contains a Puzzle with array numbers and isGiven */
     private final Puzzle puzzle = new Puzzle();
+    private SudokuMain mainFrame;
 
     /** Constructor */
-    public GameBoardPanel() {
+    public GameBoardPanel(SudokuMain mainFrame) {
+        this.mainFrame = mainFrame;
         super.setLayout(new GridLayout(SudokuConstants.GRID_SIZE, SudokuConstants.GRID_SIZE));  // JPanel
 
         // Allocate the 2D array of Cell, and added into JPanel.
@@ -75,6 +77,7 @@ public class GameBoardPanel extends JPanel {
                 cells[row][col].newGame(puzzle.numbers[row][col], puzzle.isGiven[row][col]);
             }
         }
+        mainFrame.updateStatusBar();
     }
 
     /**
@@ -90,6 +93,21 @@ public class GameBoardPanel extends JPanel {
             }
         }
         return true;
+    }
+
+    /**
+     * Return the number of cells remaining to be filled
+     */
+    public int getCellsRemaining() {
+        int count = 0;
+        for (int row = 0; row < SudokuConstants.GRID_SIZE; ++row) {
+            for (int col = 0; col < SudokuConstants.GRID_SIZE; ++col) {
+                if (cells[row][col].status == CellStatus.TO_GUESS || cells[row][col].status == CellStatus.WRONG_GUESS) {
+                    count++;
+                }
+            }
+        }
+        return count;
     }
 
     // [TODO 2] Define a Listener Inner Class for all the editable Cells
@@ -117,6 +135,9 @@ public class GameBoardPanel extends JPanel {
                 sourceCell.status = CellStatus.WRONG_GUESS;
             }
             sourceCell.paint();   // re-paint this cell based on its status
+
+            // Update the status bar
+            mainFrame.updateStatusBar();
 
             /*
              * [TODO 6] (later)
