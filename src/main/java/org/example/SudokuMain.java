@@ -44,6 +44,56 @@ public class SudokuMain extends JFrame {
         // Initialize the game board to start the game
         board.newGame();
 
+        // Create the menu bar
+        JMenuBar menuBar = new JMenuBar();
+
+        JMenu fileMenu = new JMenu("File");
+        JMenuItem newGameItem = new JMenuItem("New Game");
+        JMenuItem resetGameItem = new JMenuItem("Reset Game");
+        JMenuItem exitItem = new JMenuItem("Exit");
+
+        newGameItem.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                board.newGame();
+            }
+        });
+
+        resetGameItem.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                board.newGame();
+            }
+        });
+
+        exitItem.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                System.exit(0);
+            }
+        });
+
+        fileMenu.add(newGameItem);
+        fileMenu.add(resetGameItem);
+        fileMenu.addSeparator();
+        fileMenu.add(exitItem);
+
+        // Build the Options menu
+        JMenu optionsMenu = new JMenu("Options");
+        // Add options menu items here
+
+        // Build the Help menu
+        JMenu helpMenu = new JMenu("Help");
+        // Add help menu items here
+
+        // Add menus to the menu bar
+        menuBar.add(fileMenu);
+        menuBar.add(optionsMenu);
+        menuBar.add(helpMenu);
+
+        // Set the menu bar
+        setJMenuBar(menuBar);
+
         pack();     // Pack the UI components, instead of using setSize()
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);  // to handle window-closing
         setTitle("Sudoku");
