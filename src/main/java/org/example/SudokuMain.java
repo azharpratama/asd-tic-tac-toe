@@ -27,6 +27,7 @@ public class SudokuMain extends JFrame {
         cp.setLayout(new BorderLayout());
         cp.add(board, BorderLayout.CENTER);
         cp.add(btnNewGame, BorderLayout.SOUTH);
+        cp.add(statusBar, BorderLayout.NORTH);
 
         btnNewGame.addActionListener(new ActionListener() {
             @Override
@@ -87,9 +88,7 @@ public class SudokuMain extends JFrame {
         // Set the menu bar
         setJMenuBar(menuBar);
 
-        // Add the status bar
         statusBar.setEditable(false);
-        cp.add(statusBar, BorderLayout.SOUTH);
 
         pack();     // Pack the UI components, instead of using setSize()
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);  // to handle window-closing
