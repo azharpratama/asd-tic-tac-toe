@@ -46,6 +46,11 @@ public class GameMain extends JPanel {
                         currentState = board.stepGame(currentPlayer, row, col);
                         // Switch player
                         currentPlayer = (currentPlayer == Seed.CROSS) ? Seed.NOUGHT : Seed.CROSS;
+                        if (currentState == State.PLAYING) {
+                            SoundEffect.EAT_FOOD.play();
+                        } else {
+                            SoundEffect.DIE.play();
+                        }
                     }
                 } else {        // game over
                     newGame();  // restart the game
