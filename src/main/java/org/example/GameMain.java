@@ -12,7 +12,7 @@ package org.example;
 
 import java.awt.*;
 import java.awt.event.*;
-import java.io.Serial;
+
 import javax.swing.*;
 import java.awt.image.*;
 import java.io.*;
@@ -28,7 +28,7 @@ public class GameMain extends JPanel {
 
     // Define named constants for the drawing graphics
     public static final String TITLE = "Connect Four";
-    public static final Color COLOR_BG = new Color(0, 0, 0,0 );
+    public static final Color COLOR_BG = Color.WHITE;
     public static final Color COLOR_BG_STATUS = new Color(216, 216, 216);
     public static final Color COLOR_CROSS = new Color(239, 105, 80); // Red #EF6950
     public static final Color COLOR_NOUGHT = new Color(64, 154, 225); // Blue #409AE1
@@ -38,7 +38,10 @@ public class GameMain extends JPanel {
     private Board board; // the game board
     private State currentState; // the current state of the game
     private Seed currentPlayer; // the current player
-    private final JLabel statusBar; // for displaying status message
+    private static JButton newGameHuman;
+    private static JButton newGameAI;
+    private final JPanel statusBar; // for displaying status message
+    private final JLabel statusLabel; // JLabel inside the statusBar
     private AIPlayer aiPlayer;
     private String gameMode = "AI";
 
@@ -87,26 +90,26 @@ public class GameMain extends JPanel {
             }
         });
 
-        // Setup the status bar (JLabel) to display status message
-        statusBar = new JLabel();
-        statusBar.setFont(FONT_STATUS);
-        statusBar.setBackground(COLOR_BG_STATUS);
-        this.setOpaque(false);
+        this.setOpaque(false); // Set the panel to be transparent
 
-        statusBar.setPreferredSize(new Dimension(300, 30));
-        statusBar.setHorizontalAlignment(JLabel.LEFT);
-        statusBar.setBorder(BorderFactory.createEmptyBorder(5, 10, 5, 12));
+        // Setup the status bar (JPanel) to display status message
+        statusBar = new JPanel(new BorderLayout());
+        statusLabel = new JLabel();
+        statusLabel.setFont(FONT_STATUS);
+        statusLabel.setBackground(COLOR_BG_STATUS);
+        statusLabel.setOpaque(true);
 
-        super.setLayout(new BorderLayout());
-        super.add(statusBar, BorderLayout.PAGE_END); // same as SOUTH
-        super.setPreferredSize(new Dimension(Board.CANVAS_WIDTH, Board.CANVAS_HEIGHT + 30));
-        // account for statusBar in height
-        super.setBorder(BorderFactory.createLineBorder(COLOR_BG_STATUS, 2, false));
+        statusLabel.setPreferredSize(new Dimension(300, 30));
+        statusLabel.setHorizontalAlignment(JLabel.LEFT);
+        statusLabel.setBorder(BorderFactory.createEmptyBorder(5, 10, 5, 12));
+        
+        statusBar.add(statusLabel, BorderLayout.CENTER);
 
         // Add the status bar and button panel to the main panel
         super.setLayout(new BorderLayout());
         super.add(statusBar, BorderLayout.PAGE_END); // same as SOUTH
-        super.setPreferredSize(new Dimension(Board.CANVAS_WIDTH, Board.CANVAS_HEIGHT + 60)); // account for statusBar and buttons in height
+        super.setPreferredSize(new Dimension(Board.CANVAS_WIDTH, Board.CANVAS_HEIGHT + 30)); // account for statusBar and buttons in height
+        super.setBorder(BorderFactory.createLineBorder(COLOR_BG_STATUS, 2, false));
         super.setBorder(BorderFactory.createLineBorder(COLOR_BG_STATUS, 2, false));
 
         // Set up Game
@@ -136,22 +139,22 @@ public class GameMain extends JPanel {
     @Override
     public void paintComponent(Graphics g) { // Callback via repaint()
         super.paintComponent(g);
-
+        setBackground(COLOR_BG); // set its background color
         board.paint(g); // ask the game board to paint itself
 
         // Print status-bar message
         if (currentState == State.PLAYING) {
-            statusBar.setForeground(Color.BLACK);
-            statusBar.setText((currentPlayer == Seed.CROSS) ? "X's Turn" : "O's Turn");
+            statusLabel.setForeground(Color.BLACK);
+            statusLabel.setText((currentPlayer == Seed.CROSS) ? "X's Turn" : "O's Turn");
         } else if (currentState == State.DRAW) {
-            statusBar.setForeground(Color.RED);
-            statusBar.setText("It's a Draw! Click to play again.");
+            statusLabel.setForeground(Color.RED);
+            statusLabel.setText("It's a Draw! Click to play again.");
         } else if (currentState == State.CROSS_WON) {
-            statusBar.setForeground(Color.RED);
-            statusBar.setText("'X' Won! Click to play again.");
+            statusLabel.setForeground(Color.RED);
+            statusLabel.setText("'X' Won! Click to play again.");
         } else if (currentState == State.NOUGHT_WON) {
-            statusBar.setForeground(Color.RED);
-            statusBar.setText("'O' Won! Click to play again.");
+            statusLabel.setForeground(Color.RED);
+            statusLabel.setText("'O' Won! Click to play again.");
         }
     }
 
@@ -167,12 +170,12 @@ public class GameMain extends JPanel {
                 GameMain gamePanel = new GameMain();
 
                 // Create the New Game buttons
-                JButton newGameHuman = new JButton("New Game Vs Human");
-                newGameHuman.setFont(new Font("Arial", Font.BOLD, 14));
+                newGameHuman = new JButton("New Game Vs Human");
+                newGameHuman.setFont(FONT_STATUS);
                 newGameHuman.setBackground(Color.LIGHT_GRAY);
 
-                JButton newGameAI = new JButton("New Game Vs AI");
-                newGameAI.setFont(new Font("Arial", Font.BOLD, 14));
+                newGameAI = new JButton("New Game Vs AI");
+                newGameAI.setFont(FONT_STATUS);
                 newGameAI.setBackground(Color.LIGHT_GRAY);
 
                 // Add action listeners to the buttons
