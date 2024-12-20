@@ -36,7 +36,7 @@ public class AIPlayerTableLookup extends AIPlayer {
      *  @return int[2] of {row, col}
      */
     @Override
-    public int[] move() {
+    public int[] move(String difficulty) {
         for (int[] move : preferredMoves) {
             if (cells[move[0]][move[1]].content == Seed.NO_SEED) {
                 return move;

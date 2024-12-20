@@ -40,10 +40,13 @@ public class GameMain extends JPanel {
     private Seed currentPlayer; // the current player
     private static JButton newGameHuman;
     private static JButton newGameAI;
+    private final JPanel buttonPanel; // for the New Game buttons
     private final JPanel statusBar; // for displaying status message
     private final JLabel statusLabel; // JLabel inside the status bar
+    private final JLabel difficultyLabel; // JLabel inside the status bar
     private AIPlayer aiPlayer; // AI player
     private String gameMode = "AI"; // Default to vs AI mode
+    private String difficulty = "Medium"; // Default difficulty
     private BufferedImage backgroundImage; // Background image
     private BufferedImage dialogBackgroundImage; // Dialog background image
 
@@ -75,7 +78,7 @@ public class GameMain extends JPanel {
                         }
                         // Let the AI make a move if it's the AI's turn
                         if (gameMode == "AI" && currentPlayer == Seed.NOUGHT && currentState == State.PLAYING) {
-                            int[] move = aiPlayer.move();
+                            int[] move = aiPlayer.move(difficulty);
                             currentState = board.stepGame(currentPlayer, move[0], move[1]);
                             currentPlayer = (currentPlayer == Seed.CROSS) ? Seed.NOUGHT : Seed.CROSS;
                         }
@@ -92,6 +95,7 @@ public class GameMain extends JPanel {
 
         // Setup the status bar (JPanel) to display status message
         statusBar = new JPanel(new BorderLayout());
+
         statusLabel = new JLabel();
         statusLabel.setFont(FONT_STATUS);
         statusLabel.setBackground(COLOR_BG_STATUS);
@@ -99,7 +103,17 @@ public class GameMain extends JPanel {
         statusLabel.setPreferredSize(new Dimension(300, 30));
         statusLabel.setHorizontalAlignment(JLabel.LEFT);
         statusLabel.setBorder(BorderFactory.createEmptyBorder(5, 10, 5, 12));
-        statusBar.add(statusLabel, BorderLayout.CENTER);
+
+        difficultyLabel = new JLabel();
+        difficultyLabel.setFont(FONT_STATUS);
+        difficultyLabel.setBackground(COLOR_BG_STATUS);
+        difficultyLabel.setOpaque(true);
+        difficultyLabel.setPreferredSize(new Dimension(300, 30));
+        difficultyLabel.setHorizontalAlignment(JLabel.RIGHT);
+        difficultyLabel.setBorder(BorderFactory.createEmptyBorder(5, 10, 5, 12));
+
+        statusBar.add(statusLabel, BorderLayout.WEST);
+        statusBar.add(difficultyLabel, BorderLayout.EAST);
 
         // Create the New Game buttons
         newGameHuman = new JButton("New Game Vs Human");
@@ -124,13 +138,14 @@ public class GameMain extends JPanel {
             @Override
             public void actionPerformed(ActionEvent e) {
                 gameMode = "AI";
+                showDifficultySelectionDialog();
                 initGame(); // Reinitialize the game
                 newGame(); // Reset the board
             }
         });
 
         // Create a panel for the buttons
-        JPanel buttonPanel = new JPanel(new FlowLayout());
+        buttonPanel = new JPanel(new FlowLayout());
         buttonPanel.add(newGameHuman);
         buttonPanel.add(newGameAI);
 
@@ -145,13 +160,60 @@ public class GameMain extends JPanel {
         super.setLayout(new BorderLayout());
         super.add(buttonPanel, BorderLayout.PAGE_START); // same as NORTH
         super.add(statusBar, BorderLayout.PAGE_END); // same as SOUTH
-        super.setPreferredSize(new Dimension(Board.CANVAS_WIDTH, Board.CANVAS_HEIGHT + 30)); // account for statusBar
+        super.setPreferredSize(new Dimension(Board.CANVAS_WIDTH, Board.CANVAS_HEIGHT + 60)); // account for statusBar
                                                                                              // and buttons in height
         super.setBorder(BorderFactory.createLineBorder(COLOR_BG_STATUS, 2, false));
 
         // Set up Game
         initGame();
         newGame();
+    }
+
+    private void showDifficultySelectionDialog() {
+        JDialog dialog = new JDialog((Frame) null, "Select Difficulty", true);
+        dialog.setLayout(new BorderLayout());
+        dialog.setSize(300, 150);
+        dialog.setLocationRelativeTo(this);
+    
+        JPanel buttonPanel = new JPanel();
+        buttonPanel.setLayout(new GridLayout(1, 3));
+    
+        JButton easyButton = new JButton("Easy");
+        JButton mediumButton = new JButton("Medium");
+        JButton hardButton = new JButton("Hard");
+    
+        easyButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                difficulty = "Easy";
+                dialog.dispose();
+            }
+        });
+    
+        mediumButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                difficulty = "Medium";
+                dialog.dispose();
+            }
+        });
+    
+        hardButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                difficulty = "Hard";
+                dialog.dispose();
+            }
+        });
+    
+        buttonPanel.add(easyButton);
+        buttonPanel.add(mediumButton);
+        buttonPanel.add(hardButton);
+    
+        dialog.add(new JLabel("Choose Difficulty Level:", SwingConstants.CENTER), BorderLayout.NORTH);
+        dialog.add(buttonPanel, BorderLayout.CENTER);
+    
+        dialog.setVisible(true);
     }
 
     /** Initialize the game (run once) */
@@ -201,6 +263,13 @@ public class GameMain extends JPanel {
             statusLabel.setForeground(Color.RED);
             statusLabel.setText("'O' Won! Click to play again.");
             showCustomNotification("'O' Won the Game!", "Game Over", "/images/win.png");
+        }
+
+        if (gameMode == "AI") {
+            difficultyLabel.setForeground(Color.BLACK);
+            difficultyLabel.setText("Difficulty: " + difficulty);
+        } else {
+            difficultyLabel.setText("2 Players");
         }
     }
 

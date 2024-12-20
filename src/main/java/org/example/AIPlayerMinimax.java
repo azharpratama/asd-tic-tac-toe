@@ -24,8 +24,12 @@ public class AIPlayerMinimax extends AIPlayer {
 
     /** Get next best move for computer. Return int[2] of {row, col} */
     @Override
-    int[] move() {
-        int depth = 6;
+    int[] move(String difficulty) {
+        int depth;
+        if (difficulty.equals("Easy")) depth = 4;
+        else if (difficulty.equals("Medium")) depth = 6;
+        else if (difficulty.equals("Hard")) depth = 8;
+        else depth = 6;
         int[] result = minimax(depth, mySeed, Integer.MIN_VALUE, Integer.MAX_VALUE);
         return new int[] { result[1], result[2] }; // row, col
     }
