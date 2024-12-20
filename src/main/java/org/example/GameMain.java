@@ -27,7 +27,7 @@ public class GameMain extends JPanel {
     private static final long serialVersionUID = 1L; // to prevent serializable warning
 
     // Define named constants for the drawing graphics
-    public static final String TITLE = "Tic Tac Toe";
+    public static final String TITLE = "Connect Four";
     public static final Color COLOR_BG = new Color(0, 0, 0,0 );
     public static final Color COLOR_BG_STATUS = new Color(216, 216, 216);
     public static final Color COLOR_CROSS = new Color(239, 105, 80); // Red #EF6950
@@ -39,6 +39,7 @@ public class GameMain extends JPanel {
     private State currentState; // the current state of the game
     private Seed currentPlayer; // the current player
     private final JLabel statusBar; // for displaying status message
+    private AIPlayer aiPlayer;
 
     /** Constructor to set up the UI and game components */
     public GameMain() {
@@ -48,7 +49,6 @@ public class GameMain extends JPanel {
             @Override
             public void mouseClicked(MouseEvent e) { // mouse-clicked handler
                 int mouseX = e.getX();
-                int mouseY = e.getY();
                 // Get the row and column clicked
                 // int row = mouseY / Cell.SIZE;
                 int col = mouseX / Cell.SIZE;
@@ -69,6 +69,12 @@ public class GameMain extends JPanel {
                                 currentPlayer = (currentPlayer == Seed.CROSS) ? Seed.NOUGHT : Seed.CROSS;
                                 break;
                             }
+                        }
+                        // Let the AI make a move if it's the AI's turn
+                        if (currentPlayer == Seed.NOUGHT && currentState == State.PLAYING) {
+                            int[] move = aiPlayer.move();
+                            currentState = board.stepGame(currentPlayer, move[0], move[1]);
+                            currentPlayer = (currentPlayer == Seed.CROSS) ? Seed.NOUGHT : Seed.CROSS;
                         }
                     }
                 } else { // game over
@@ -105,6 +111,7 @@ public class GameMain extends JPanel {
     /** Initialize the game (run once) */
     public void initGame() {
         board = new Board(); // allocate the game-board
+        aiPlayer = new AIPlayerTableLookup(board);
     }
 
     /** Reset the game-board contents and the current-state, ready for new game */
