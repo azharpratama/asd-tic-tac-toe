@@ -120,7 +120,7 @@ public class GameMain extends JPanel {
         super.paintComponent(g);
         setBackground(COLOR_BG); // set its background color
 
-        board.paint(g); // ask the game board to paint itself
+        board.paint(g);  // ask the game board to paint itself
 
         // Print status-bar message
         if (currentState == State.PLAYING) {
@@ -146,13 +146,32 @@ public class GameMain extends JPanel {
         javax.swing.SwingUtilities.invokeLater(new Runnable() {
             public void run() {
                 JFrame frame = new JFrame(TITLE);
-                // Set the content-pane of the JFrame to an instance of main JPanel
-                frame.setContentPane(new GameMain());
+
+                GameMain gamePanel = new GameMain();
+
+                // Create the Restart button
+                JButton restartButton = new JButton("Restart");
+                restartButton.setFont(new Font("Arial", Font.BOLD, 14));
+                restartButton.setBackground(Color.LIGHT_GRAY);
+
+                // Add action listener to restart the game
+                restartButton.addActionListener(e -> {
+                    gamePanel.initGame();  // Reinitialize the game
+                    gamePanel.newGame();  // Reset the board
+                    gamePanel.repaint();  // Redraw the panel
+                });
+
+                // Create a wrapper panel to combine the restart button and game panel
+                JPanel wrapperPanel = new JPanel(new BorderLayout());
+                wrapperPanel.add(restartButton, BorderLayout.NORTH); // Add the button at the top
+                wrapperPanel.add(gamePanel, BorderLayout.CENTER);    // Add the game panel in the center
+
+                // Set the wrapper panel as the content pane of the frame
+                frame.setContentPane(wrapperPanel);
                 frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
                 frame.pack();
-                frame.setLocationRelativeTo(null); // center the application window
-                frame.setVisible(true); // show it
-
+                frame.setLocationRelativeTo(null); // Center the frame
+                frame.setVisible(true);            // Show the frame
             }
         });
     }
