@@ -77,6 +77,7 @@ public class GameMain extends JPanel {
             }
         });
 
+
         // Setup the status bar (JLabel) to display status message
         statusBar = new JLabel();
         statusBar.setFont(FONT_STATUS);
