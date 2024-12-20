@@ -160,7 +160,7 @@ public class GameMain extends JPanel {
     /** Initialize the game (run once) */
     public void initGame() {
         board = new Board(); // allocate the game-board
-        aiPlayer = new AIPlayerTableLookup(board);
+        aiPlayer = new AIPlayerMinimax(board);
     }
 
     /** Reset the game-board contents and the current-state, ready for new game */
