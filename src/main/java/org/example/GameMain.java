@@ -14,6 +14,9 @@ import java.awt.*;
 import java.awt.event.*;
 import java.io.Serial;
 import javax.swing.*;
+import java.awt.image.*;
+import java.io.*;
+import javax.imageio.ImageIO;
 
 /**
  * Tic-Tac-Toe: Two-player Graphic version with better OO design.
@@ -25,7 +28,7 @@ public class GameMain extends JPanel {
 
     // Define named constants for the drawing graphics
     public static final String TITLE = "Tic Tac Toe";
-    public static final Color COLOR_BG = Color.WHITE;
+    public static final Color COLOR_BG = new Color(0, 0, 0,0 );
     public static final Color COLOR_BG_STATUS = new Color(216, 216, 216);
     public static final Color COLOR_CROSS = new Color(239, 105, 80); // Red #EF6950
     public static final Color COLOR_NOUGHT = new Color(64, 154, 225); // Blue #409AE1
@@ -82,7 +85,8 @@ public class GameMain extends JPanel {
         statusBar = new JLabel();
         statusBar.setFont(FONT_STATUS);
         statusBar.setBackground(COLOR_BG_STATUS);
-        statusBar.setOpaque(true);
+        this.setOpaque(false);
+
         statusBar.setPreferredSize(new Dimension(300, 30));
         statusBar.setHorizontalAlignment(JLabel.LEFT);
         statusBar.setBorder(BorderFactory.createEmptyBorder(5, 10, 5, 12));
@@ -118,7 +122,6 @@ public class GameMain extends JPanel {
     @Override
     public void paintComponent(Graphics g) { // Callback via repaint()
         super.paintComponent(g);
-        setBackground(COLOR_BG); // set its background color
 
         board.paint(g);  // ask the game board to paint itself
 
@@ -150,8 +153,8 @@ public class GameMain extends JPanel {
                 GameMain gamePanel = new GameMain();
 
                 // Create the Restart button
-                JButton restartButton = new JButton("Restart");
-                restartButton.setFont(new Font("Arial", Font.BOLD, 14));
+                JButton restartButton = new JButton("Restart Game");
+                restartButton.setFont(new Font("Arial", Font.BOLD, 16));
                 restartButton.setBackground(Color.LIGHT_GRAY);
 
                 // Add action listener to restart the game
@@ -161,8 +164,29 @@ public class GameMain extends JPanel {
                     gamePanel.repaint();  // Redraw the panel
                 });
 
-                // Create a wrapper panel to combine the restart button and game panel
-                JPanel wrapperPanel = new JPanel(new BorderLayout());
+                // Load the background image
+                BufferedImage backgroundImage = null;
+                try {
+                    backgroundImage = ImageIO.read(GameMain.class.getResource("/images/background.jpg"));
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+
+                // Define final variable for inner class
+                final BufferedImage finalBackgroundImage = backgroundImage;
+
+                // Create a wrapper panel with a background
+                JPanel wrapperPanel = new JPanel(new BorderLayout()) {
+                    @Override
+                    protected void paintComponent(Graphics g) {
+                        super.paintComponent(g);
+                        if (finalBackgroundImage != null) {
+                            g.drawImage(finalBackgroundImage, 0, 0, getWidth(), getHeight(), this);
+                        }
+                    }
+                };
+
+                // Add the game panel and restart button to the wrapper panel
                 wrapperPanel.add(restartButton, BorderLayout.NORTH); // Add the button at the top
                 wrapperPanel.add(gamePanel, BorderLayout.CENTER);    // Add the game panel in the center
 
