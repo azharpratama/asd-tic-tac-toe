@@ -25,10 +25,6 @@ import javax.imageio.ImageIO;
 public class GameMain extends JPanel {
     @Serial
     private static final long serialVersionUID = 1L; // to prevent serializable warning
-    private boolean gameEnded = false; // Penanda untuk permainan selesai
-    private BufferedImage dialogBackgroundImage; // Variabel instance untuk dialog
-
-
 
     // Define named constants for the drawing graphics
     public static final String TITLE = "Connect Four";
@@ -49,6 +45,7 @@ public class GameMain extends JPanel {
     private AIPlayer aiPlayer; // AI player
     private String gameMode = "AI"; // Default to vs AI mode
     private BufferedImage backgroundImage; // Background image
+    private BufferedImage dialogBackgroundImage; // Dialog background image
 
     /** Constructor to set up the UI and game components */
     public GameMain() {
@@ -172,13 +169,12 @@ public class GameMain extends JPanel {
         }
         currentPlayer = Seed.CROSS; // cross plays first
         currentState = State.PLAYING; // ready to play
-        gameEnded = false; // Reset game-ended flag
         repaint();
     }
 
     /** Custom painting codes on this JPanel */
     @Override
-    public void paintComponent(Graphics g) {
+    public void paintComponent(Graphics g) { // Callback via repaint()
         super.paintComponent(g);
         setBackground(COLOR_BG); // set its background color
 
@@ -189,24 +185,22 @@ public class GameMain extends JPanel {
 
         board.paint(g); // ask the game board to paint itself
 
-        // Notify winner or draw (only once)
-        if (!gameEnded) {
-            if (currentState == State.CROSS_WON) {
-                showCustomNotification("'X' Won the Game!", "Game Over", "/images/win.png");
-                gameEnded = true; // Tandai permainan selesai
-            } else if (currentState == State.NOUGHT_WON) {
-                showCustomNotification("'O' Won the Game!", "Game Over", "/images/win.png");
-                gameEnded = true; // Tandai permainan selesai
-            } else if (currentState == State.DRAW) {
-                showCustomNotification("It's a Draw!", "Game Over", "/images/win.png");
-                gameEnded = true; // Tandai permainan selesai
-            }
-        }
-
         // Print status-bar message
         if (currentState == State.PLAYING) {
             statusLabel.setForeground(Color.BLACK);
             statusLabel.setText((currentPlayer == Seed.CROSS) ? "X's Turn" : "O's Turn");
+        } else if (currentState == State.DRAW) {
+            statusLabel.setForeground(Color.RED);
+            statusLabel.setText("It's a Draw! Click to play again.");
+            showCustomNotification("It's a Draw!", "Game Over", "/images/win.png");
+        } else if (currentState == State.CROSS_WON) {
+            statusLabel.setForeground(Color.RED);
+            statusLabel.setText("'X' Won! Click to play again.");
+            showCustomNotification("'X' Won the Game!", "Game Over", "/images/win.png");
+        } else if (currentState == State.NOUGHT_WON) {
+            statusLabel.setForeground(Color.RED);
+            statusLabel.setText("'O' Won! Click to play again.");
+            showCustomNotification("'O' Won the Game!", "Game Over", "/images/win.png");
         }
     }
 
@@ -237,7 +231,7 @@ public class GameMain extends JPanel {
 
         // Add message text
         JLabel messageLabel = new JLabel(message, SwingConstants.CENTER);
-        messageLabel.setFont(new Font("Arial", Font.BOLD, 18));
+        messageLabel.setFont(FONT_STATUS);
         messageLabel.setForeground(Color.WHITE); // Text color
         messagePanel.add(messageLabel, BorderLayout.CENTER);
 
@@ -255,9 +249,12 @@ public class GameMain extends JPanel {
         newGameButton.setBackground(Color.WHITE); // Set button background to white
         newGameButton.setForeground(Color.BLACK); // Set button text color to black
         newGameButton.setFocusPainted(false);
-        newGameButton.addActionListener(e -> {
-            dialog.dispose(); // Close dialog on button click
-            newGame(); // Start a new game
+        newGameButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                dialog.dispose(); // Close dialog on button click
+                newGame(); // Start a new game
+            }
         });
 
         buttonPanel.add(newGameButton); // Add button to button panel
@@ -267,12 +264,6 @@ public class GameMain extends JPanel {
         dialog.setLocationRelativeTo(this); // Center the dialog on screen
         dialog.setVisible(true); // Show dialog
     }
-
-
-
-
-
-
 
     /** The entry "main" method */
     public static void main(String[] args) {
