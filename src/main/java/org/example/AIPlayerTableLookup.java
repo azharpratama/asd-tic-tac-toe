@@ -17,8 +17,8 @@ public class AIPlayerTableLookup extends AIPlayer {
 
     // Moves {row, col} in order of preferences. {0, 0} at top-left corner
     private int[][] preferredMoves = {
-            {1, 1}, {0, 0}, {0, 2}, {2, 0}, {2, 2},
-            {0, 1}, {1, 0}, {1, 2}, {2, 1}};
+        {5, 0}, {5, 1}, {5, 2}, {5, 3}, {5, 4}, {5, 5}, {5, 6}
+    };
 
     /** constructor */
     public AIPlayerTableLookup(Board board) {
