@@ -74,7 +74,25 @@ public enum SoundEffect {
       }
    }
 
-   /** Optional static method to pre-load all the sound files. */
+   public void playLoop() {
+      if (volume != Volume.MUTE) {
+         if (clip.isRunning()) {
+            clip.stop(); // Stop if already running
+         }
+         clip.setFramePosition(0); // Rewind to the beginning
+         clip.loop(Clip.LOOP_CONTINUOUSLY); // Play in a loop
+      }
+   }
+
+
+   public void stop() {
+      if (clip.isRunning()) {
+         clip.stop(); // Stop if running
+      }
+   }
+
+
+
    static void initGame() {
       values(); // calls the constructor for all the elements
    }

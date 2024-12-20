@@ -49,6 +49,7 @@ public class GameMain extends JPanel {
 //                int row = mouseY / Cell.SIZE;
                 int col = mouseX / Cell.SIZE;
 
+
                 if (currentState == State.PLAYING) {
                     if (col >= 0 && col < Board.COLS) {
                         for (int row = Board.ROWS - 1; row >= 0; row--) {
@@ -72,8 +73,10 @@ public class GameMain extends JPanel {
                 }
                 // Refresh the drawing canvas
                 repaint();  // Callback paintComponent().
+
             }
         });
+
 
         // Setup the status bar (JLabel) to display status message
         statusBar = new JLabel();
@@ -138,6 +141,8 @@ public class GameMain extends JPanel {
     /** The entry "main" method */
     public static void main(String[] args) {
         // Run GUI construction codes in Event-Dispatching thread for thread safety
+        SoundEffect.initGame();
+        SoundEffect.BACKGORUND.playLoop();
         javax.swing.SwingUtilities.invokeLater(new Runnable() {
             public void run() {
                 JFrame frame = new JFrame(TITLE);
@@ -147,6 +152,7 @@ public class GameMain extends JPanel {
                 frame.pack();
                 frame.setLocationRelativeTo(null); // center the application window
                 frame.setVisible(true);            // show it
+
             }
         });
     }
