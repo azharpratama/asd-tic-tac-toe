@@ -41,20 +41,18 @@ public class GameMain extends JPanel {
     private static JButton newGameHuman;
     private static JButton newGameAI;
     private final JPanel statusBar; // for displaying status message
-    private final JLabel statusLabel; // JLabel inside the statusBar
-    private AIPlayer aiPlayer;
-    private String gameMode = "AI";
+    private final JLabel statusLabel; // JLabel inside the status bar
+    private AIPlayer aiPlayer; // AI player
+    private String gameMode = "AI"; // Default to vs AI mode
+    private BufferedImage backgroundImage; // Background image
 
     /** Constructor to set up the UI and game components */
     public GameMain() {
-
         // This JPanel fires MouseEvent
         super.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) { // mouse-clicked handler
                 int mouseX = e.getX();
-                // Get the row and column clicked
-                // int row = mouseY / Cell.SIZE;
                 int col = mouseX / Cell.SIZE;
 
                 if (currentState == State.PLAYING) {
@@ -86,7 +84,6 @@ public class GameMain extends JPanel {
                 }
                 // Refresh the drawing canvas
                 repaint(); // Callback paintComponent().
-
             }
         });
 
@@ -98,18 +95,57 @@ public class GameMain extends JPanel {
         statusLabel.setFont(FONT_STATUS);
         statusLabel.setBackground(COLOR_BG_STATUS);
         statusLabel.setOpaque(true);
-
         statusLabel.setPreferredSize(new Dimension(300, 30));
         statusLabel.setHorizontalAlignment(JLabel.LEFT);
         statusLabel.setBorder(BorderFactory.createEmptyBorder(5, 10, 5, 12));
-        
         statusBar.add(statusLabel, BorderLayout.CENTER);
+
+        // Create the New Game buttons
+        newGameHuman = new JButton("New Game Vs Human");
+        newGameHuman.setFont(FONT_STATUS);
+        newGameHuman.setBackground(Color.LIGHT_GRAY);
+
+        newGameAI = new JButton("New Game Vs AI");
+        newGameAI.setFont(FONT_STATUS);
+        newGameAI.setBackground(Color.LIGHT_GRAY);
+
+        // Add action listeners to the buttons
+        newGameHuman.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                gameMode = "Human";
+                initGame(); // Reinitialize the game
+                newGame(); // Reset the board
+            }
+        });
+
+        newGameAI.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                gameMode = "AI";
+                initGame(); // Reinitialize the game
+                newGame(); // Reset the board
+            }
+        });
+
+        // Create a panel for the buttons
+        JPanel buttonPanel = new JPanel(new FlowLayout());
+        buttonPanel.add(newGameHuman);
+        buttonPanel.add(newGameAI);
+
+        // Load the background image
+        try {
+            backgroundImage = ImageIO.read(GameMain.class.getResource("/images/background.jpg"));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
 
         // Add the status bar and button panel to the main panel
         super.setLayout(new BorderLayout());
+        super.add(buttonPanel, BorderLayout.PAGE_START); // same as NORTH
         super.add(statusBar, BorderLayout.PAGE_END); // same as SOUTH
-        super.setPreferredSize(new Dimension(Board.CANVAS_WIDTH, Board.CANVAS_HEIGHT + 30)); // account for statusBar and buttons in height
-        super.setBorder(BorderFactory.createLineBorder(COLOR_BG_STATUS, 2, false));
+        super.setPreferredSize(new Dimension(Board.CANVAS_WIDTH, Board.CANVAS_HEIGHT + 30)); // account for statusBar
+                                                                                             // and buttons in height
         super.setBorder(BorderFactory.createLineBorder(COLOR_BG_STATUS, 2, false));
 
         // Set up Game
@@ -140,6 +176,12 @@ public class GameMain extends JPanel {
     public void paintComponent(Graphics g) { // Callback via repaint()
         super.paintComponent(g);
         setBackground(COLOR_BG); // set its background color
+
+        // Draw the background image
+        if (backgroundImage != null) {
+            g.drawImage(backgroundImage, 0, 0, getWidth(), getHeight(), this);
+        }
+
         board.paint(g); // ask the game board to paint itself
 
         // Print status-bar message
@@ -169,55 +211,8 @@ public class GameMain extends JPanel {
 
                 GameMain gamePanel = new GameMain();
 
-                // Create the New Game buttons
-                newGameHuman = new JButton("New Game Vs Human");
-                newGameHuman.setFont(FONT_STATUS);
-                newGameHuman.setBackground(Color.LIGHT_GRAY);
-
-                newGameAI = new JButton("New Game Vs AI");
-                newGameAI.setFont(FONT_STATUS);
-                newGameAI.setBackground(Color.LIGHT_GRAY);
-
-                // Add action listeners to the buttons
-                newGameHuman.addActionListener(e -> {
-                    gamePanel.gameMode = "Human";
-                    gamePanel.initGame();  // Reinitialize the game
-                    gamePanel.newGame();  // Reset the board
-                });
-
-                newGameAI.addActionListener(e -> {
-                    gamePanel.gameMode = "AI";
-                    gamePanel.initGame();  // Reinitialize the game
-                    gamePanel.newGame();  // Reset the board
-                });
-
-                // Load the background image
-                BufferedImage backgroundImage = null;
-                try {
-                    backgroundImage = ImageIO.read(GameMain.class.getResource("/images/background.jpg"));
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-
-                // Define final variable for inner class
-                final BufferedImage finalBackgroundImage = backgroundImage;
-
-                // Create a wrapper panel with a background
-                JPanel wrapperPanel = new JPanel(new BorderLayout()) {
-                    @Override
-                    protected void paintComponent(Graphics g) {
-                        super.paintComponent(g);
-                        if (finalBackgroundImage != null) {
-                            g.drawImage(finalBackgroundImage, 0, 0, getWidth(), getHeight(), this);
-                        }
-                    }
-                };
-
-                // Add the game panel and restart button to the wrapper panel
-                JPanel newGamePanel = new JPanel(new FlowLayout());
-                newGamePanel.add(newGameHuman);
-                newGamePanel.add(newGameAI);
-                wrapperPanel.add(newGamePanel, BorderLayout.NORTH);
+                // Create a wrapper panel to combine the new game buttons and game panel
+                JPanel wrapperPanel = new JPanel(new BorderLayout());
                 wrapperPanel.add(gamePanel, BorderLayout.CENTER);
 
                 // Set the wrapper panel as the content pane of the frame
